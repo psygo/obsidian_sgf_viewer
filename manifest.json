@@ -1,0 +1,11 @@
+{
+	"id": "sgf_viewer",
+	"name": "SGF Viewer",
+	"version": "0.0.1",
+	"minAppVersion": "0.15.0",
+	"description": "SGF Viewer for Obsidian",
+	"author": "Obsidian",
+	"authorUrl": "https://github.com/psygo",
+	"fundingUrl": "https://github.com/psygo",
+	"isDesktopOnly": false
+}
