@@ -1,11 +1,4 @@
-import {
-	App,
-	Editor,
-	MarkdownView,
-	Plugin,
-	PluginSettingTab,
-	Setting,
-} from "obsidian";
+import { App, Plugin, PluginSettingTab, Setting } from "obsidian";
 
 interface SgfViewerSettings {
 	mySetting: string;
@@ -20,15 +13,6 @@ export default class SgfViewer extends Plugin {
 
 	async onload() {
 		await this.loadSettings();
-
-		this.addCommand({
-			id: "sample-editor-command",
-			name: "Sample editor command",
-			editorCallback: (editor: Editor, view: MarkdownView) => {
-				console.log(editor.getSelection());
-				editor.replaceSelection("Sample Editor Command");
-			},
-		});
 
 		this.addSettingTab(new SgfViewerSettingTab(this.app, this));
 	}
