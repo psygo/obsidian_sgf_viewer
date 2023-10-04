@@ -7,6 +7,8 @@ import {
 	Setting,
 } from "obsidian";
 
+import { SimplePlayer } from "wgo";
+
 interface SgfViewerSettings {
 	mySetting: string;
 }
@@ -91,17 +93,34 @@ export default class SgfViewer extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		this.appendWGoScripts();
-
 		this.addSettingTab(new SgfViewerSettingTab(this.app, this));
 
+		// this.appendWGoScripts();
+
 		this.addCommand({
-			id: "sample-editor-command",
-			name: "Sample editor command",
+			id: "add-sgf-game-viewer",
+			name: "Add SGF Game Viewer",
 			editorCallback: (editor: Editor, view: MarkdownView) => {
-				console.log(editor.getSelection());
-				console.log(this.app.workspace.getLastOpenFiles()[0]);
-				editor.replaceSelection("Sample Editor Command");
+				const div = document.createElement("div");
+				div.id = "test";
+				// @ts-ignore
+				const simplePlayer = new SimplePlayer(div, {
+					sgf: "(;SZ[19];B[pc];W[pe]C[You have many choices - for example: R13];B[qg]C[Click on a letter to select a variation](;W[of]C[Old joseki];B[mc];W[qc];B[qb];W[qd];B[qj];W[ob];B[pb];W[oc];B[od];W[pd];B[oa];W[nd];B[nb];W[oe];B[jc])(;W[qc];B[qb];W[qd];B[mc](;W[og];B[pg];W[oh];B[pi];W[ob];B[pb];W[oc];B[pd];W[od];B[qe];W[re];B[qf];W[rb];B[oe];W[ne];B[pf];W[md]TR[rb][qc][qd][re]C[Marked stones are not dead yet.])(;W[pg];B[ph];W[ob];B[pb];W[oc];B[od];W[pd];B[nc];W[nd]MA[og]C[White can play at X as well.];B[oe];W[nf];B[oa];W[of];B[nb];W[qh];B[qf];W[pi];B[oh];W[ri];B[rh];W[qi];B[pf];W[nh];B[re];W[oc];B[ob];W[ne];B[oc];W[rg];B[rf];W[sh];B[rc]C[Interesting joseki])))",
+				});
+				document.body.append(div);
+				// document.body.innerHTML += `
+				// 	<div
+				// 		data-wgo="AncientGame.sgf"
+				// 		data-wgo-board="stoneHandler: WGo.Board.drawHandlers.NORMAL,
+				// 						background: 'wgo/textures/wood2.jpg'"
+				// 		class="SGF"
+				// 	>
+				// 		<p>
+				// 		Your browser doesn't support the WGo.js Player. Please use a more
+				// 		modern browser, like Brave, Chrome, Firefox or Edge.
+				// 		</p>
+				// 	</div>
+				// `;
 			},
 		});
 	}
