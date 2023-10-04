@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   wgo:
-    specifier: 3.0.0-alpha.10
-    version: 3.0.0-alpha.10
+    specifier: 3.0.0-alpha.9
+    version: 3.0.0-alpha.9
 
 devDependencies:
   '@types/node':
@@ -1254,8 +1254,8 @@ packages:
     resolution: {integrity: sha512-dpojBhNsCNN7T82Tm7k26A6G9ML3NkhDsnw9n/eoxSRlVBB4CEtIQ/KTCLI2Fwf3ataSXRhYFkQi3SlnFwPvPQ==}
     dev: true
 
-  /wgo@3.0.0-alpha.10:
-    resolution: {integrity: sha512-8TUHCD8mlzvszIlWikEUdT+BL9GeiAO6Rns2SNQkSmTl9pryrABSKrAcTiMwBDx6uH3O95Zl7VhpaHGGChwNbw==}
+  /wgo@3.0.0-alpha.9:
+    resolution: {integrity: sha512-j+b75G4RIi6Dj5I3G3UGvWKM+W8jQJ5FVkNB8chibNB1SKxi6b6sHkrjiHpXB8H4PSW8a+nIxXDa1seu9rmXbg==}
     dev: false
 
   /which@2.0.2:
