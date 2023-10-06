@@ -29,6 +29,7 @@ export default class SgfViewer extends Plugin {
 			const activeFile = this.app.workspace.getActiveFile();
 			if (activeFile) {
 				const text = await this.app.vault.read(activeFile);
+				console.log(text)
 				const sgfMatches = text
 					.match(/<sgf>(.*?)<\/sgf>/g)
 					?.map(function (val) {
