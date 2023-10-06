@@ -5,6 +5,8 @@ import {
 	Plugin,
 	PluginSettingTab,
 	Setting,
+	ListedFiles,
+	editorLivePreviewField,
 } from "obsidian";
 
 import { SimplePlayer } from "wgo";
@@ -21,49 +23,82 @@ export default class SgfViewer extends Plugin {
 	settings: SgfViewerSettings;
 
 	async onload() {
-		await this.loadSettings();
-
-		// this.app.workspace.on(
-		// 	"editor-change",
-		// 	(editor: Editor, info: MarkdownView) => {
-		// 		// console.log(editor.);
-		// 	}
-		// );
-
-		this.registerDomEvent(document, "keyup", async (evt: Event) => {
-			const activeFile = this.app.workspace.getActiveFile();
-			if (activeFile) {
-				const text = await this.app.vault.read(activeFile);
-				const sgfMatches = text
-					.match(/<sgf>(.*?)<\/sgf>/g)
-					?.map(function (val) {
-						return val.replace(/<\/?sgf>/g, "");
-					});
-
-				if (sgfMatches) {
-					const lines = Array.from(
-						document.body.querySelectorAll<HTMLDivElement>(
-							".cm-line"
-						)
-					);
-
-					for (const sgfMatch of sgfMatches) {
-						const sgfLineDiv = lines.filter((l) =>
-							l.innerHTML.contains(sgfMatch)
-						)[0];
-
-						if (sgfLineDiv) {
-							const div = document.createElement("div");
-							div.className = "sgf";
-							const simplePlayer = new SimplePlayer(div, {
-								sgf: sgfMatch,
-							});
-							sgfLineDiv?.appendChild(div);
-						}
-					}
+		this.app.workspace.on(
+			"editor-change",
+			async (editor: Editor, info: MarkdownView) => {
+				const activeFile = this.app.workspace.getActiveFile();
+				if (activeFile) {
+					const text = await this.app.vault.read(activeFile);
 				}
+
+				this.app.vault.process(
+					this.app.vault
+						.getFiles()
+						// Does get the content of a file
+						.filter((f) => f.name.contains("psygo"))[0],
+					(data: string) => {
+						const wgoDiv = document.createElement("div");
+						wgoDiv.id = "test";
+						const simplePlayer = new SimplePlayer(wgoDiv, {
+							sgf: data,
+						});
+
+						const parentDiv = document.createElement("div");
+						parentDiv.className = "internal-embed";
+						parentDiv.appendChild(wgoDiv);
+
+						// Don't use this, otherwise it's gonna paste a bazillion text lines
+						// to your file. It does work if you put it append it to the work-
+						// space though.
+						// const workspace =
+						// 	document.body.querySelectorAll(".cm-content")[0];
+						// workspace!.append(parentDiv);
+
+						return data;
+					}
+				);
+				// console.log(
+				// 	this.app.vault
+				// 		.getFiles()
+				// 		.filter((f) => f.name.contains("psygo"))[0]
+				// );
 			}
-		});
+		);
+
+		// this.registerDomEvent(document, "keyup", async (evt: Event) => {
+		// 	const activeFile = this.app.workspace.getActiveFile();
+		// 	if (activeFile) {
+		// 		const text = await this.app.vault.read(activeFile);
+		// 		const sgfMatches = text
+		// 			.match(/<sgf>(.*?)<\/sgf>/g)
+		// 			?.map(function (val) {
+		// 				return val.replace(/<\/?sgf>/g, "");
+		// 			});
+
+		// 		if (sgfMatches) {
+		// 			const lines = Array.from(
+		// 				document.body.querySelectorAll<HTMLDivElement>(
+		// 					".cm-line"
+		// 				)
+		// 			);
+
+		// 			for (const sgfMatch of sgfMatches) {
+		// 				const sgfLineDiv = lines.filter((l) =>
+		// 					l.innerHTML.contains(sgfMatch)
+		// 				)[0];
+
+		// 				if (sgfLineDiv) {
+		// 					const div = document.createElement("div");
+		// 					div.className = "sgf";
+		// 					const simplePlayer = new SimplePlayer(div, {
+		// 						sgf: sgfMatch,
+		// 					});
+		// 					sgfLineDiv?.appendChild(div);
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// });
 
 		this.addCommand({
 			id: "add-sgf-game-viewer",
@@ -84,44 +119,4 @@ export default class SgfViewer extends Plugin {
 	}
 
 	onunload() {}
-
-	async loadSettings() {
-		this.settings = Object.assign(
-			{},
-			DEFAULT_SETTINGS,
-			await this.loadData()
-		);
-	}
-
-	async saveSettings() {
-		await this.saveData(this.settings);
-	}
-}
-
-class SgfViewerSettingTab extends PluginSettingTab {
-	plugin: SgfViewer;
-
-	constructor(app: App, plugin: SgfViewer) {
-		super(app, plugin);
-		this.plugin = plugin;
-	}
-
-	display(): void {
-		const { containerEl } = this;
-
-		containerEl.empty();
-
-		new Setting(containerEl)
-			.setName("Create Board")
-			.setDesc("Creates an SGF View of a SGF file.")
-			.addText((text) =>
-				text
-					.setPlaceholder("Enter your secret")
-					.setValue(this.plugin.settings.mySetting)
-					.onChange(async (value) => {
-						this.plugin.settings.mySetting = value;
-						await this.plugin.saveSettings();
-					})
-			);
-	}
 }
