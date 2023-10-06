@@ -23,19 +23,45 @@ export default class SgfViewer extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		this.addSettingTab(new SgfViewerSettingTab(this.app, this));
+		// this.app.workspace.on(
+		// 	"editor-change",
+		// 	(editor: Editor, info: MarkdownView) => {
+		// 		// console.log(editor.);
+		// 	}
+		// );
 
 		this.registerDomEvent(document, "keyup", async (evt: Event) => {
 			const activeFile = this.app.workspace.getActiveFile();
 			if (activeFile) {
 				const text = await this.app.vault.read(activeFile);
-				console.log(text)
 				const sgfMatches = text
 					.match(/<sgf>(.*?)<\/sgf>/g)
 					?.map(function (val) {
 						return val.replace(/<\/?sgf>/g, "");
 					});
-				console.log(sgfMatches);
+
+				if (sgfMatches) {
+					const lines = Array.from(
+						document.body.querySelectorAll<HTMLDivElement>(
+							".cm-line"
+						)
+					);
+
+					for (const sgfMatch of sgfMatches) {
+						const sgfLineDiv = lines.filter((l) =>
+							l.innerHTML.contains(sgfMatch)
+						)[0];
+
+						if (sgfLineDiv) {
+							const div = document.createElement("div");
+							div.className = "sgf";
+							const simplePlayer = new SimplePlayer(div, {
+								sgf: sgfMatch,
+							});
+							sgfLineDiv?.appendChild(div);
+						}
+					}
+				}
 			}
 		});
 
